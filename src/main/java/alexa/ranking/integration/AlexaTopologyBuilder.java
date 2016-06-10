@@ -1,0 +1,37 @@
+package alexa.ranking.integration;
+
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.tuple.Fields;
+
+import alexa.ranking.topology.ClientHoldingRankingRequestBolt;
+import alexa.ranking.topology.ListReadingSpout;
+
+
+public class AlexaTopologyBuilder {
+
+    public static StormTopology build() throws Exception {
+        String urlDataFile = System.getProperty("alexa.url.file");
+        String proxyDataFile = System.getProperty("alexa.proxy.file");
+        String resultDataFile = System.getProperty("alexa.result.file");
+        return build(urlDataFile, proxyDataFile, resultDataFile);
+    }
+
+    public static StormTopology build(
+            String urlDataFile,
+            String proxyDataFile,
+            String resultDataFile) throws Exception {
+        TopologyBuilder builder = new TopologyBuilder();
+
+        builder
+            .setSpout("listsource", new ListReadingSpout(urlDataFile), 1)
+            .setMaxSpoutPending(5000);
+        builder.setBolt("ranking", new ClientHoldingRankingRequestBolt(resultDataFile, proxyDataFile), 1024)
+            .addConfiguration("timeout", 120000)
+            .fieldsGrouping("listsource", new Fields("line"))
+            .setNumTasks(1024);
+        StormTopology topology = builder.createTopology();
+        return topology;
+    }
+
+}
