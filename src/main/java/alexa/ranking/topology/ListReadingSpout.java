@@ -1,8 +1,14 @@
 package alexa.ranking.topology;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.WRITE;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -20,11 +26,13 @@ public class ListReadingSpout extends BaseRichSpout {
     private static final Logger logger = LoggerFactory.getLogger(ListReadingSpout.class);
     private static final long serialVersionUID = 4461080581264998777L;
     private final String urlDataFile;
+    private final String ackedDataFile;
     private SpoutOutputCollector collector;
     private TreeSet<String> urls;
 
-    public ListReadingSpout(String urlDataFile) {
+    public ListReadingSpout(String urlDataFile, String ackedDataFile) {
         this.urlDataFile = urlDataFile;
+        this.ackedDataFile = ackedDataFile;
     }
 
     @Override
@@ -53,9 +61,9 @@ public class ListReadingSpout extends BaseRichSpout {
     public void ack(Object msgId) {
         logger.info("Acking [{}]", msgId);
         try {
-            Files.write(Paths.get(urlDataFile), urls);
+            Files.write(Paths.get(ackedDataFile), Arrays.asList(new String[] {msgId.toString()}), UTF_8, WRITE, APPEND, CREATE);
         } catch (IOException e) {
-            logger.error("Could not rewrite the URL file", e);
+            throw new RuntimeException(e);
         }
     }
 

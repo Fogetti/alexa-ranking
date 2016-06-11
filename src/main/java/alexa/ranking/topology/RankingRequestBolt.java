@@ -76,8 +76,9 @@ public abstract class RankingRequestBolt extends BaseRichBolt {
         else link = "https:" + StringUtils.removeEnd(StringUtils.substringAfter(line, "\"https:"), "\"");
         logger.info("Ranking: [{}]", link);
         try {
-            calculateSearches(link, line);
+            String ranking = calculateRanking(link, line);
             collector.ack(input);
+            writeResult(line, ranking);
         } catch (IOException e) {
             logger.error("Calculating ranking for: "+link+" failed", e);
             collector.fail(input);
@@ -90,7 +91,7 @@ public abstract class RankingRequestBolt extends BaseRichBolt {
         }
     }
 
-    private void calculateSearches(String url, String line) throws IOException {
+    private String calculateRanking(String url, String line) throws IOException {
         int nextPick = new Random().nextInt(proxies.size());
         String nextProxy = proxies.get(nextPick);
         String[] hostAndPort = nextProxy.split(":");
@@ -101,8 +102,11 @@ public abstract class RankingRequestBolt extends BaseRichBolt {
         AlexaRanking client = builder.build();
         String ranking = client.rankingFor(URLEncoder.encode(url, "UTF-8"));
         if (ranking == null) throw new NullPointerException("Ranking was null");
-        String[] rnk = {line+","+ranking};
-        Files.write(result, Arrays.asList(rnk), UTF_8, WRITE, APPEND, CREATE);
+        return ranking;
+    }
+
+    private void writeResult(String line, String ranking) throws IOException {
+        Files.write(result, Arrays.asList(new String[] {line+","+ranking}), UTF_8, WRITE, APPEND, CREATE);
         logger.debug("Alexa ranking request succeeded");
     }
 

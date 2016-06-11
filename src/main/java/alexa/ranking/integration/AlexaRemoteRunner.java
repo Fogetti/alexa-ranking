@@ -10,17 +10,18 @@ public class AlexaRemoteRunner {
         String urlDataFile = args[0];
         String proxyDataFile = args[1];
         String resultDataFile = args[2];
-        StormTopology topology = AlexaTopologyBuilder.build(urlDataFile, proxyDataFile, resultDataFile);
+        String ackedDataFile = args[3];
+        StormTopology topology = AlexaTopologyBuilder.build(urlDataFile, ackedDataFile, proxyDataFile, resultDataFile);
         
         Config config = new Config();
         config.setNumWorkers(60);
         config.setMessageTimeoutSecs(60);
         config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE,
-                   new Integer(16384));
+                   new Integer(65536));
         config.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE,
-                   new Integer(16384));
+                   new Integer(65536));
         config.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE,
-                   new Integer(16384));
+                   new Integer(65536));
         
         StormSubmitter.submitTopology("alexa-ranking", config, topology);
     }

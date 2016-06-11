@@ -12,19 +12,21 @@ public class AlexaTopologyBuilder {
 
     public static StormTopology build() throws Exception {
         String urlDataFile = System.getProperty("alexa.url.file");
+        String ackedDataFile = System.getProperty("alexa.acked.file");
         String proxyDataFile = System.getProperty("alexa.proxy.file");
         String resultDataFile = System.getProperty("alexa.result.file");
-        return build(urlDataFile, proxyDataFile, resultDataFile);
+        return build(urlDataFile, ackedDataFile, proxyDataFile, resultDataFile);
     }
 
     public static StormTopology build(
             String urlDataFile,
+            String ackedDataFile,
             String proxyDataFile,
             String resultDataFile) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder
-            .setSpout("listsource", new ListReadingSpout(urlDataFile), 1)
+            .setSpout("listsource", new ListReadingSpout(urlDataFile, ackedDataFile), 1)
             .setMaxSpoutPending(25000)
             .setNumTasks(1);
         builder.setBolt("ranking", new ClientHoldingRankingRequestBolt(resultDataFile, proxyDataFile), 1024)
