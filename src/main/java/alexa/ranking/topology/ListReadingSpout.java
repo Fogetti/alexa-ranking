@@ -52,6 +52,11 @@ public class ListReadingSpout extends BaseRichSpout {
     @Override
     public void ack(Object msgId) {
         logger.info("Acking [{}]", msgId);
+        try {
+            Files.write(Paths.get(urlDataFile), urls);
+        } catch (IOException e) {
+            logger.error("Could not rewrite the URL file", e);
+        }
     }
 
     @Override
