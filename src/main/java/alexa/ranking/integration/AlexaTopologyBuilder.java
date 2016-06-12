@@ -27,12 +27,12 @@ public class AlexaTopologyBuilder {
 
         builder
             .setSpout("listsource", new ListReadingSpout(urlDataFile, ackedDataFile), 1)
-            .setMaxSpoutPending(50000)
+            .setMaxSpoutPending(25000)
             .setNumTasks(1);
-        builder.setBolt("ranking", new ClientHoldingRankingRequestBolt(resultDataFile, proxyDataFile), 2048)
-            .addConfiguration("timeout", 120000)
+        builder.setBolt("ranking", new ClientHoldingRankingRequestBolt(resultDataFile, proxyDataFile), 1024)
+            .addConfiguration("timeout", 15000)
             .fieldsGrouping("listsource", new Fields("line"))
-            .setNumTasks(2048);
+            .setNumTasks(1024);
         StormTopology topology = builder.createTopology();
         return topology;
     }
