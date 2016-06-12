@@ -17,11 +17,11 @@ public class AlexaRemoteRunner {
         config.setNumWorkers(60);
         config.setMessageTimeoutSecs(180);
         config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE,
-                   new Integer(65536));
+                   new Integer(131072));
         config.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE,
-                   new Integer(65536));
+                   new Integer(131072));
         config.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE,
-                   new Integer(65536));
+                   new Integer(131072));
         
         StormSubmitter.submitTopology("alexa-ranking", config, topology);
     }

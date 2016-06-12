@@ -27,7 +27,7 @@ public class AlexaTopologyBuilder {
 
         builder
             .setSpout("listsource", new ListReadingSpout(urlDataFile, ackedDataFile), 1)
-            .setMaxSpoutPending(5000)
+            .setMaxSpoutPending(50000)
             .setNumTasks(1);
         builder.setBolt("ranking", new ClientHoldingRankingRequestBolt(resultDataFile, proxyDataFile), 2048)
             .addConfiguration("timeout", 120000)
