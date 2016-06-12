@@ -15,7 +15,7 @@ public class AlexaRemoteRunner {
         
         Config config = new Config();
         config.setNumWorkers(60);
-        config.setMessageTimeoutSecs(100);
+        config.setMessageTimeoutSecs(180);
         config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE,
                    new Integer(65536));
         config.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE,
