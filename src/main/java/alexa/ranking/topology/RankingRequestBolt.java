@@ -71,7 +71,7 @@ public abstract class RankingRequestBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple input) {
         String line = input.getStringByField("line");
-        String rank = StringUtils.substringAfterLast(StringUtils.substringBefore(line, ",\"http:"), ",");
+        String rank = StringUtils.substringAfterLast(StringUtils.substringBefore(line, ",\"http"), ",");
         if (!"null".equals(rank)) {
             logger.info("The line [{}] is already ranked by [{}]", line, rank);
             collector.ack(input);
